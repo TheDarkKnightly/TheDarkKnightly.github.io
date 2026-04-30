@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event - Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #f472b6;
+    --pink-light: #fce7f3;
+    --pink-glow: #ec4899;
+    --pink-soft: #fbcfe8;
+    --green: #bbf7d0;
+    --green-dark: #4ade80;
+    --sky: #bae6fd;
+    --sky-dark: #38bdf8;
+    --white: #ffffff;
+    --cream: #fdf4f9;
+    --text: #4a1942;
+    --text-soft: #7c3a6e;
+    --card-bg: linear-gradient(145deg, #fff9fc, #fce7f3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(180deg, #e0f2fe 0%, #fce7f3 30%, #f0fdf4 60%, #fce7f3 100%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* Floating flowers background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(244,114,182,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 60%, rgba(56,189,248,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(74,222,128,0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating particles */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: float linear infinite;
+    opacity: 0.4;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.4; }
+    90% { opacity: 0.4; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+
+  .header-card {
+    display: inline-block;
+    background: linear-gradient(135deg, #fff 0%, #fce7f3 50%, #e0f2fe 100%);
+    border-radius: 32px;
+    padding: 48px 64px;
+    box-shadow:
+      0 0 0 2px rgba(244,114,182,0.3),
+      0 20px 60px rgba(244,114,182,0.25),
+      0 0 80px rgba(244,114,182,0.1),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+    position: relative;
+    overflow: hidden;
+    max-width: 700px;
+    width: 100%;
+  }
+
+  .header-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f472b6' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--pink), #c026d3);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 20px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(244,114,182,0.4);
+  }
+
+  .header-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #be185d, #7c3aed, #0284c7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .header-sub {
+    font-size: 16px;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+
+  .flower-emoji {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+    animation: sway 3s ease-in-out infinite;
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 16px;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+    margin-bottom: 40px;
+  }
+
+  .nav-inner {
+    display: flex;
+    gap: 8px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 100px;
+    padding: 8px;
+    box-shadow: 0 8px 32px rgba(244,114,182,0.2), 0 0 0 1px rgba(244,114,182,0.15);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-btn {
+    text-decoration: none;
+    color: var(--text-soft);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 100px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-btn:hover, .nav-btn.active {
+    background: linear-gradient(135deg, var(--pink), #c026d3);
+    color: white;
+    box-shadow: 0 4px 12px rgba(244,114,182,0.4);
+  }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 10;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* SECTION CARD */
+  .section-card {
+    background: linear-gradient(145deg, #ffffff, #fdf4f9);
+    border-radius: 28px;
+    padding: 36px;
+    box-shadow:
+      0 0 0 1.5px rgba(244,114,182,0.2),
+      0 8px 40px rgba(244,114,182,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.95);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .section-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1.5px rgba(244,114,182,0.3),
+      0 16px 50px rgba(244,114,182,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.95);
+  }
+
+  .section-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .section-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(244,114,182,0.3);
+  }
+
+  .icon-pink { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+  .icon-blue { background: linear-gradient(135deg, #e0f2fe, #bae6fd); }
+  .icon-green { background: linear-gradient(135deg, #dcfce7, #bbf7d0); }
+  .icon-purple { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); }
+  .icon-yellow { background: linear-gradient(135deg, #fef9c3, #fef08a); }
+
+  .section-title-wrap h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .section-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pink);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* STEPS */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), #c026d3);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(244,114,182,0.35);
+  }
+
+  .step-content {
+    flex: 1;
+    padding-top: 5px;
+  }
+
+  .step-content p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--text-soft);
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: linear-gradient(135deg, #1e1b4b, #312e81);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin: 10px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #c4b5fd;
+    border: 1px solid rgba(167,139,250,0.2);
+    box-shadow: 0 4px 20px rgba(99,102,241,0.15);
+    position: relative;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+
+  .code-block .code-label {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 10px;
+    color: rgba(196,181,253,0.5);
+    font-family: 'Nunito', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* CALLOUT */
+  .callout {
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin: 12px 0;
+  }
+
+  .callout-pink {
+    background: linear-gradient(135deg, #fce7f3, #fdf2f8);
+    border: 1.5px solid rgba(244,114,182,0.25);
+  }
+
+  .callout-blue {
+    background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+    border: 1.5px solid rgba(56,189,248,0.25);
+  }
+
+  .callout-green {
+    background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+    border: 1.5px solid rgba(74,222,128,0.25);
+  }
+
+  .callout-yellow {
+    background: linear-gradient(135deg, #fef9c3, #fefce8);
+    border: 1.5px solid rgba(250,204,21,0.3);
+  }
+
+  .callout-icon { font-size: 22px; flex-shrink: 0; }
+
+  .callout-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-soft);
+  }
+
+  .callout-text strong { color: var(--text); }
+
+  /* TABLE */
+  .fancy-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin: 8px 0;
+  }
+
+  .fancy-table thead th {
+    background: linear-gradient(135deg, var(--pink), #c026d3);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 12px 20px;
+    text-align: left;
+  }
+
+  .fancy-table thead th:first-child { border-radius: 12px 0 0 12px; }
+  .fancy-table thead th:last-child { border-radius: 0 12px 12px 0; }
+
+  .fancy-table tbody tr td {
+    background: linear-gradient(135deg, #fff9fc, #fdf4f9);
+    padding: 14px 20px;
+    font-size: 14px;
+    color: var(--text-soft);
+    border: 1px solid rgba(244,114,182,0.1);
+    border-left: none;
+    border-right: none;
+    transition: background 0.2s;
+  }
+
+  .fancy-table tbody tr:hover td {
+    background: linear-gradient(135deg, #fce7f3, #fdf2f8);
+  }
+
+  .fancy-table tbody tr td:first-child {
+    border-left: 1px solid rgba(244,114,182,0.1);
+    border-radius: 12px 0 0 12px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .fancy-table tbody tr td:last-child {
+    border-right: 1px solid rgba(244,114,182,0.1);
+    border-radius: 0 12px 12px 0;
+  }
+
+  /* HIERARCHY */
+  .hierarchy {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .rank-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 1.5px solid rgba(244,114,182,0.15);
+    background: linear-gradient(135deg, #fff9fc, #ffffff);
+    transition: all 0.2s;
+  }
+
+  .rank-card:hover {
+    border-color: rgba(244,114,182,0.35);
+    box-shadow: 0 4px 20px rgba(244,114,182,0.1);
+    transform: translateX(4px);
+  }
+
+  .rank-badge {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .rank-1 { background: linear-gradient(135deg, #fce7f3, #fbcfe8); color: #be185d; }
+  .rank-2 { background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0369a1; }
+  .rank-3 { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #7e22ce; }
+  .rank-4 { background: linear-gradient(135deg, #fef9c3, #fde68a); color: #92400e; }
+
+  .rank-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .rank-desc {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-left: auto;
+    text-align: right;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, rgba(244,114,182,0.3), transparent);
+    margin: 20px 0;
+  }
+
+  /* MUST-DO SECTION */
+  .mustdo {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    border-radius: 28px;
+    padding: 36px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(99,102,241,0.3);
+  }
+
+  .mustdo::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(244,114,182,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .mustdo h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #c4b5fd;
+    margin-bottom: 20px;
+  }
+
+  .mustdo .code-block {
+    background: rgba(0,0,0,0.3);
+    border-color: rgba(167,139,250,0.15);
+  }
+
+  .mustdo .callout-text { color: #c4b5fd; }
+  .mustdo .callout-pink {
+    background: rgba(244,114,182,0.1);
+    border-color: rgba(244,114,182,0.2);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .footer-card {
+    display: inline-block;
+    background: linear-gradient(135deg, #fff, #fce7f3);
+    border-radius: 24px;
+    padding: 28px 48px;
+    box-shadow: 0 0 0 1.5px rgba(244,114,182,0.2), 0 8px 32px rgba(244,114,182,0.12);
+  }
+
+  .footer-card p {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-soft);
+  }
+
+  .footer-card .name {
+    font-size: 18px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--pink), #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .header-card { padding: 32px 24px; }
+    .section-card { padding: 24px 20px; }
+    .nav-inner { gap: 4px; }
+    .nav-btn { font-size: 12px; padding: 7px 14px; }
+    .rank-desc { display: none; }
+    .mustdo { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-card">
+    <span class="flower-emoji">🌸</span>
+    <h1 class="header-title">Event Guide</h1>
+    <p class="header-sub">Руководство для event-администраторов</p>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#hierarchy" class="nav-btn">Иерархия</a>
+    <a href="#request" class="nav-btn">Запрос</a>
+    <a href="#prep" class="nav-btn">Подготовка</a>
+    <a href="#conduct" class="nav-btn">Проведение</a>
+    <a href="#end" class="nav-btn">Завершение</a>
+    <a href="#commands" class="nav-btn">Команды</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- ИЕРАРХИЯ -->
+  <div class="section-card" id="hierarchy">
+    <div class="section-header">
+      <div class="section-icon icon-yellow">👑</div>
+      <div class="section-title-wrap">
+        <div class="section-num">Структура отдела</div>
+        <h2>Иерархия</h2>
+      </div>
+    </div>
+    <div class="hierarchy">
+      <div class="rank-card">
+        <span class="rank-badge rank-4">Chief</span>
+        <span class="rank-name">Chief</span>
+        <span class="rank-desc">Глава отдела. Финальное слово</span>
+      </div>
+      <div class="rank-card">
+        <span class="rank-badge rank-3">Deputy Chief</span>
+        <span class="rank-name">Deputy Chief</span>
+        <span class="rank-desc">Координирует работу младших, организует глобальные мероприятия</span>
+      </div>
+      <div class="rank-card">
+        <span class="rank-badge rank-2">Senior</span>
+        <span class="rank-name">Senior Event Administrator</span>
+        <span class="rank-desc">Более опытный, наставник</span>
+      </div>
+      <div class="rank-card">
+        <span class="rank-badge rank-1">Admin</span>
+        <span class="rank-name">Event Administrator</span>
+        <span class="rank-desc">Начальный уровень, проводит базовые мероприятия</span>
+      </div>
+    </div>
+  </div>
+
+   <!-- РАЗДЕЛ 1 — ПОДГОТОВКА -->
+  <div class="section-card" id="prep">
+    <div class="section-header">
+      <div class="section-icon icon-blue">📋</div>
+      <div class="section-title-wrap">
+        <div class="section-num">Раздел 1</div>
+        <h2>Подготовка к мероприятию</h2>
+      </div>
+    </div>
+ 
+    <div class="callout callout-yellow">
+      <span class="callout-icon">☑️</span>
+      <div class="callout-text">
+        Прежде чем что-либо делать — проверь три вещи. Все три. Не одну, не две — именно три.
+      </div>
+    </div>
+ 
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <p>Проверь, присутствует ли на сервере <strong>5+ уровневый администратор.</strong> Без него — МП не проводится.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <p>Посмотри на <strong>нагрузку по репортам</strong> — если всё горит, то сначала помоги потушить, ивент подождёт.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <p>Оцени <strong>сколько администрации в игре.</strong> Если ты один — это уже повод для вопросов, а не для ивента.</p>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="divider"></div>
+ 
+    <p style="font-family:'Nunito',sans-serif; font-weight:800; color:var(--text); margin-bottom:16px; font-size:16px;">Всё хорошо? Тогда поехали:</p>
+ 
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <p>Уведоми чат администрации через <strong>a/</strong> что будешь проводить МП. Просто предупреди — никто не кусается.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <p>Перейди в <strong>Event-дискорд → раздел "Ивент администраторы" → Панель старших.</strong> Здесь начинается твой выбор МП.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <p>Если нужные МП не отображаются — нажми <strong>"Мероприятия"</strong> → затем <strong>"Анонсы"</strong>. Да, именно "Анонсы" — не ищи логику, просто запомни.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <p>Выбери нужное МП → нажми <strong>"Опубликовать" → "Подтвердить".</strong> Готово. Теперь оно должно появиться у хелперов в разделе <strong>work — Участие в мероприятиях.</strong></p>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="callout callout-pink" style="margin-top:16px;">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">
+        <strong>Важное примечание:</strong> не нужно создавать новое МП — выбери приближённое по смыслу и публикуй. Например: МП связано со стрельбой по кому-то? Бери <strong>"Под прицелом"</strong>. Связано с гонками? Бери гоночное. Логика понятна — не усложняй.
+      </div>
+    </div>
+  </div>
+ 
+  <!-- РАЗДЕЛ 2 — ПРОВЕДЕНИЕ -->
+  <div class="section-card" id="conduct">
+    <div class="section-header">
+      <div class="section-icon icon-green">🎮</div>
+      <div class="section-title-wrap">
+        <div class="section-num">Раздел 2</div>
+        <h2>Проведение мероприятия</h2>
+      </div>
+    </div>
+ 
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <p>Перейди в раздел <strong>"Ивент хелперы"</strong> и тегни роль <strong>@Event Helper</strong> — спроси берут ли они участие. Если да — запроси их <strong>динамические ID.</strong></p>
+          <div class="callout callout-yellow">
+            <span class="callout-icon">🎤</span>
+            <div class="callout-text">Сразу зайди в <strong>войс-канал</strong> — общение голосом работает лучше чем переписка в моменте ивента. Проверено.</div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <p>Составьте <strong>план действий:</strong> место проведения, суть МП, роли каждого. Чем чётче план — тем меньше хаоса потом.</p>
+          <div class="callout callout-red">
+            <span class="callout-icon">🚫</span>
+            <div class="callout-text">
+              <strong>Нецензурная лексика запрещена.</strong> Хелперы в первую очередь игроки, а не подчинённые. Уважение — базовое требование, не опция.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <p>В игре установи себе другой дименшен — иначе игроки будут телепортироваться не туда. Команда:</p>
+          <div class="code-block">
+            <span class="code-label">команда</span>
+            /setdim dynamicID number
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <p>После всех обсуждений — иди в канал <strong>"Выдача наказания"</strong> и составляй команду для /o. Примеры найдёшь там же — нажми <strong>Ctrl+F</strong> и введи <strong>/o</strong>. Всё перед глазами.</p>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="divider"></div>
+ 
+    <!-- ОБЯЗАТЕЛЬНОЕ -->
+    <div class="mustdo" style="border-radius:20px; margin-top:4px;">
+      <h2>⚡ Обязательная информация</h2>
+      <p class="sub">После закрытия телепортации на ивент — сразу отправляй. Без исключений. Каждый раз.</p>
+ 
+      <p style="font-size:13px; font-weight:700; color:#a78bfa; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Отправить в /e:</p>
+      <div class="code-block">
+        <span class="code-label">/e</span>
+        discord.gg/events8 >>> Дискорд ивентов: в нем сейчас проходит набор на Event Helper, а также вы сможете узнавать первым об уникальных событиях, играх, розыгрышах, оповещениях о ивентах и глобальных мп
+      </div>
+      <div class="code-block">
+        <span class="code-label">/e</span>
+        Также вы можете создать там войс, и если победите, то вам мы начислим дополнительную награду.
+      </div>
+ 
+      <div style="height:16px;"></div>
+      <p style="font-size:13px; font-weight:700; color:#a78bfa; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">На моменте зачитки правил — отправить в /s:</p>
+      <div class="code-block">
+        <span class="code-label">/s</span>
+        Любая помеха организаторам запрещена, оскорбления будут считаться OOC. Запрещено нарушать любые правила сервера, использовать любые предметы, кроме бинтов и аптечек и выданных администрацией вещей, занимать локации, которые были закрыты организаторами, выходить за зону проведения. Вам нужно убрать всё из быстрых слотов
+      </div>
+ 
+      <div class="tip">
+        <strong>Лайфхак:</strong> пиши через сколько закроешь ивент. Пример: <strong>(через 2 минуты) /eventoff</strong> — администратор будет знать через сколько ему закрывать. Всем удобнее.
+      </div>
+    </div>
+  </div>
+ 
+  <!-- РАЗДЕЛ 3 — ПРОЦЕСС -->
+  <div class="section-card" id="process">
+    <div class="section-header">
+      <div class="section-icon icon-purple">👁️</div>
+      <div class="section-title-wrap">
+        <div class="section-num">Раздел 3</div>
+        <h2>Процесс мероприятия</h2>
+      </div>
+    </div>
+ 
+    <div class="callout callout-pink">
+      <span class="callout-icon">🎯</span>
+      <div class="callout-text">
+        Если основную задачу выполняют ивент-хелперы — <strong>ты следишь за порядком.</strong> Ты пришёл провести МП, а не повеселиться вместе с игроками. Помни об этом.
+      </div>
+    </div>
+ 
+    <p style="font-family:'Nunito',sans-serif; font-weight:800; color:var(--text); margin:20px 0 12px; font-size:15px;">Твои задачи в процессе:</p>
+ 
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <p>Выполняй технические задачи по ходу МП — достать из воды, выдать оружие, заспавнить авто через выдачу, предупредить игроков. Ты — техподдержка ивента.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <p>Следи за нарушениями. Нарушил — получил. Никаких "ну он первый начал".</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <p>После объявления победителя — уведоми его и хелперов, <strong>передай приз</strong> и спроси куда телепортировать. Телепортируй. Всё.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <p>Если можешь — продолжай МП дальше. Если нет — телепортируй ивент-хелперов куда они попросят.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- РАЗДЕЛ 4 — ВОЗВРАТ СРЕДСТВ -->
+  <div class="section-card" id="refund">
+    <div class="section-header">
+      <div class="section-icon icon-pink">💸</div>
+      <div class="section-title-wrap">
+        <div class="section-num">Раздел 4</div>
+        <h2>Возврат средств</h2>
+      </div>
+    </div>
+ 
+    <div class="callout callout-blue">
+      <span class="callout-icon">🌸</span>
+      <div class="callout-text">
+        В <strong>розовом дискорде</strong> — да-да, там где ты получаешь выговоры и обжалуешь жалобы — есть раздел <strong>"commands".</strong> Именно там пишешь команду на возврат средств.
+      </div>
+    </div>
+ 
+    <p style="font-size:14px; color:var(--text-soft); margin:16px 0 8px; line-height:1.7;">Максимальная сумма возврата — <strong style="color:var(--text);">50.000$</strong>. Команда выглядит так:</p>
+ 
+    <div class="code-block">
+      <span class="code-label">команда</span>
+      /givemoney staticID Сумма Причина
+    </div>
+ 
+    <p style="font-size:14px; color:var(--text-soft); margin:8px 0; line-height:1.7;">Чаще всего это выглядит вот так:</p>
+ 
+    <div class="code-block">
+      <span class="code-label">пример</span>
+      /givemoney 99712 50000 eventcompens
+    </div>
+ 
+    <div class="callout callout-yellow" style="margin-top:12px;">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">
+        Причина <strong>eventcompens</strong> — стандартная. Не выдумывай что-то своё, используй её.
+      </div>
+    </div>
+  </div>
+ 
+  <!-- РАЗДЕЛ 5 — КОМАНДЫ -->
+  <div class="section-card" id="commands">
+    <div class="section-header">
+      <div class="section-icon icon-purple">⌨️</div>
+      <div class="section-title-wrap">
+        <div class="section-num">Раздел 5</div>
+        <h2>Команды</h2>
+      </div>
+    </div>
+ 
+    <div class="callout callout-green">
+      <span class="callout-icon">📌</span>
+      <div class="callout-text">Сохрани эту страницу в закладки. Серьёзно — она тебе понадобится.</div>
+    </div>
+ 
+    <div style="height:16px;"></div>
+ 
+    <table class="fancy-table">
+      <thead>
+        <tr>
+          <th>Команда</th>
+          <th>Что делает</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>/eventon</td>
+          <td>Открывает телепорт — игроки телепортируются туда где стоишь ты</td>
+        </tr>
+        <tr>
+          <td>/eventoff</td>
+          <td>Закрывает телепорт на ивент</td>
+        </tr>
+        <tr>
+          <td>/gw dynamicID weapon ammo</td>
+          <td>Выдача оружия игроку по динамику</td>
+        </tr>
+        <tr>
+          <td>/veh name color1 color2</td>
+          <td>Спавн транспорта</td>
+        </tr>
+        <tr>
+          <td>/rveh name color1 color2 кол-во дистанция</td>
+          <td>Спавн нескольких авто по вертикали (максимум 10)</td>
+        </tr>
+        <tr>
+          <td>/o</td>
+          <td>Жёлтый текст — виден всему серверу</td>
+        </tr>
+        <tr>
+          <td>/e</td>
+          <td>Синий текст с пометкой "Event" — видят только игроки на ивенте</td>
+        </tr>
+        <tr>
+          <td>/zone dimension radius</td>
+          <td>Устанавливает жёлтый круг на карте по радиусу</td>
+        </tr>
+        <tr>
+          <td>/nextzone</td>
+          <td>Наделяет зону способностью наносить урон, сужаться и т.д. Работает лучше после /zone</td>
+        </tr>
+        <tr>
+          <td>/stopzone или /zone dim 0</td>
+          <td>Аннулировать зону</td>
+        </tr>
+        <tr>
+          <td>/setdim dynamicID number</td>
+          <td>Установить дименшен себе перед ивентом</td>
+        </tr>
+        <tr>
+          <td>/givemoney staticID сумма причина</td>
+          <td>Возврат средств игроку (максимум 50.000$)</td>
+        </tr>
+      </tbody>
+    </table>
+ 
+    <div class="callout callout-pink" style="margin-top:16px;">
+      <span class="callout-icon">🔍</span>
+      <div class="callout-text">
+        Примеры использования команд /o смотри в канале <strong>"Выдача наказания"</strong> — нажми <strong>Ctrl+F</strong> и введи <strong>/o</strong>. Всё уже есть, не надо придумывать с нуля.
+      </div>
+    </div>
+  </div>
+ 
+</main>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="footer-card">
+    <p class="name">Created by Knight</p>
+    <p>A D M I N I S T R A T I O N</p>
+  </div>
+</footer>
+ 
+<script>
+  const container = document.getElementById('particles');
+  const colors = ['#f472b6','#fb7185','#a78bfa','#38bdf8','#4ade80','#fbbf24'];
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 8 + 4;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${Math.random()*15+10}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(p);
+  }
+ 
+  const sections = document.querySelectorAll('[id]');
+  const navBtns  = document.querySelectorAll('.nav-btn');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+    navBtns.forEach(b => b.classList.toggle('active', b.getAttribute('href') === '#' + current));
+  });
+</script>
+</body>
+</html>
